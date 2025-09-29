@@ -16,7 +16,7 @@
     const colors = ["red","blue","green","orange","purple","darkred","darkblue"];
     const personColors = {}; // will assign colors per person
 
-    fetch("locations.json")  // or your Apps Script URL
+    fetch("https://script.google.com/macros/s/AKfycbzKGTztTlv0ECJcMcsDOgwQYKVKkwg_3UuV1WnYA55bT2XjVJ_eIEYFLnD2UXb--skY/exec")  // or your Apps Script URL
       .then(res => res.json())
       .then(rows => {
         if (!rows || rows.length < 2) return; // no data
