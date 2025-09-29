@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Roadtrip Map</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <style>
+    #map { height: 100vh; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    const colors = ["red","blue","green","orange","purple","darkred","darkblue"];
+    const personColors = {}; // will assign colors per person
+
+    fetch("locations.json")  // or your Apps Script URL
+      .then(res => res.json())
+      .then(rows => {
+        if (!rows || rows.length < 2) return; // no data
+
+        let map = L.map('map').setView([45, -110], 5);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        let allLats = [], allLngs = [];
+        let dataByPerson = {};
+
+        // Skip header row and group rows by name
+        const dataRows = rows.slice(1);
+        let colorIndex = 0;
+
+        dataRows.forEach(r => {
+          const [name, lat, lng, time] = r;
+          if (!dataByPerson[name]) {
+            dataByPerson[name] = [];
+            personColors[name] = colors[colorIndex % colors.length];
+            colorIndex++;
+          }
+          dataByPerson[name].push({lat: lat, lng: lng, time: time});
+        });
+
+        // Plot markers
+        for (let person in dataByPerson) {
+          let locs = dataByPerson[person];
+          // Sort by timestamp
+          locs.sort((a,b) => new Date(a.time) - new Date(b.time));
+          const latest = locs[locs.length-1];
+
+          locs.forEach(l => {
+            let radius = (l === latest) ? 12 : 6;
+            L.circleMarker([l.lat, l.lng], {
+              color: personColors[person],
+              radius: radius,
+              fillOpacity: (l === latest ? 1 : 0.7)
+            }).addTo(map)
+              .bindPopup(`<b>${person}</b><br>${l.time}`);
+
+            allLats.push(l.lat);
+            allLngs.push(l.lng);
+          });
+
+          // Add name label for latest marker
+          L.marker([latest.lat, latest.lng], {
+            icon: L.divIcon({
+              className: "person-label",
+              html: `<b>${person}</b>`,
+              iconSize: [50, 20],
+              iconAnchor: [25, -10]
+            })
+          }).addTo(map);
+        }
+
+        // Auto-center map
+        const avgLat = allLats.reduce((a,b)=>a+b,0)/allLats.length;
+        const avgLng = allLngs.reduce((a,b)=>a+b,0)/allLngs.length;
+        map.setView([avgLat, avgLng], 10);
+      })
+      .catch(err => console.error("Failed to load JSON:", err));
+  </script>
+</body>
+</html>
