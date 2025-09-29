@@ -6,6 +6,15 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
   <style>
     #map { height: 100vh; }
+    .label-text {
+      font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+      font-weight: bold;
+      font-size: 18px;        /* make it bigger */
+      color: black;
+      text-shadow: 1px 1px 2px white; /* helps visibility on map */
+      white-space: nowrap;
+}
+
   </style>
 </head>
 <body>
@@ -65,13 +74,14 @@
 
           // Add name label for latest marker
           L.marker([latest.lat, latest.lng], {
-            icon: L.divIcon({
-              className: "person-label",
-              html: `<b>${person}</b>`,
-              iconSize: [100, 40],
-              iconAnchor: [25, -10]
-            })
-          }).addTo(map);
+              icon: L.divIcon({
+                className: "person-label",
+                html: `<div class="label-text">${person}</div>`,
+                iconSize: [100, 30],   // adjust size
+                iconAnchor: [50, -10]  // center above marker
+              })
+}).addTo(map);
+
         }
 
         // Auto-center map
