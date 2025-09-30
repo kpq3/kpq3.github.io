@@ -61,7 +61,7 @@
           const latest = locs[locs.length-1];
 
           locs.forEach(l => {
-            let radius = (l === latest) ? 12 : 2;
+            let radius = (l === latest) ? 12 : 3;
             L.circleMarker([l.lat, l.lng], {
               color: personColors[person],
               radius: radius,
