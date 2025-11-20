@@ -55,6 +55,7 @@
 
         // Plot markers
         for (let person in dataByPerson) {
+		  if (person !== "Peter") continue;
           let locs = dataByPerson[person];
           // Sort by timestamp
           locs.sort((a,b) => new Date(a.time) - new Date(b.time));
