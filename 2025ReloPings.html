@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Roadtrip Map</title>
+  <title>Where's Peter</title>
   <meta charset="utf-8" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
   <style>
-    #map { height: 100vh; }
+    #map { height: 90vh; }
     
     .label-text {
       font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
@@ -15,11 +15,57 @@
       text-shadow: 1px 1px 2px white; /* helps visibility on map */
       white-space: nowrap;
 }
+	 
+	 
+	 /* Footer banner */
+	#footer-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 10vh;                   /* 10% of viewport height */
+    background: #222;               /* very dark grey */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    font-family: "Helvetica", "Arial", sans-serif; /* white sans-serif text */
+    font-size: 18px;
+    color: white;
+    z-index: 9999;
+  }
 
+  #footer-banner a {
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+  }
+
+  #footer-banner a:hover {
+    text-decoration: underline;
+  }
+
+  .label-text {
+    font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+    font-weight: bold;
+    font-size: 24px;
+    color: black;
+    text-shadow: 1px 1px 2px white;
+    white-space: nowrap;
+  }
+	
   </style>
 </head>
 <body>
   <div id="map"></div>
+  
+   <!-- ✅ New bottom banner -->
+  <div id="footer-banner">
+	<a href="https://atlantisq.wordpress.com/contact/" target="_blank">Keep in touch!</a>
+    <a href="https://www.instagram.com/atlantis.q/" target="_blank">Instagram</a>
+    <a href="https://www.linkedin.com/in/peter-qin/" target="_blank">LinkedIn</a>
+  </div>
+  
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
@@ -52,6 +98,8 @@
           }
           dataByPerson[name].push({lat: lat, lng: lng, time: time});
         });
+		
+		const bounds = L.latLngBounds([]);
 
         // Plot markers
         for (let person in dataByPerson) {
@@ -72,6 +120,8 @@
 
             allLats.push(l.lat);
             allLngs.push(l.lng);
+			
+			bounds.extend([l.lat, l.lng]);
           });
 
           // Add name label for latest marker
@@ -90,6 +140,7 @@
         const avgLat = allLats.reduce((a,b)=>a+b,0)/allLats.length;
         const avgLng = allLngs.reduce((a,b)=>a+b,0)/allLngs.length;
         map.setView([avgLat, avgLng], 10);
+		map.fitBounds(bounds, { padding: [50, 50] });
       })
       .catch(err => console.error("Failed to load JSON:", err));
   </script>
